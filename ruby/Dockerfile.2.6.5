@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 LABEL maintainer="wppurking@gmail.com"
 
 # refs: https://github.com/GoogleCloudPlatform/ruby-docker/blob/master/ruby-base/Dockerfile
@@ -20,16 +20,17 @@ RUN apt-get update \
 		bzip2 curl git vim apt-utils autoconf \
         build-essential \
         ca-certificates file \
-        libcurl3 libcurl3-gnutls libcurl4-openssl-dev \
+        libcurl4 libcurl4-openssl-dev \
         libffi-dev \
         libgdbm-dev \
         libgmp-dev \
         libicu-dev \
-		libgdbm3 \
+		libgdbm5 \
         imagemagick libmagickwand-dev \
         libjemalloc-dev libjemalloc1 \
         libpq-dev libmysqlclient-dev libsqlite3-dev \
         libxml2-dev libxslt-dev \
+        zlib1g-dev \
         libncurses5-dev \
         libqdbm-dev \
         libreadline6-dev \
@@ -44,11 +45,11 @@ RUN mkdir -p /usr/local/etc \
 		echo 'update: --no-document'; \
 	} >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 3.0
-ENV RUBY_VERSION 3.0.0
-ENV RUBY_DOWNLOAD_SHA256 a13ed141a1c18eb967aac1e33f4d6ad5f21be1ac543c344e0d6feeee54af8e28
-ENV RUBYGEMS_VERSION 3.2.3
-ENV BUNDLER_VERSION 2.2.16
+ENV RUBY_MAJOR 2.6
+ENV RUBY_VERSION 2.6.5
+ENV RUBY_DOWNLOAD_SHA256 66976b716ecc1fd34f9b7c3c2b07bbd37631815377a2e3e85a5b194cfdcbed7d
+ENV RUBYGEMS_VERSION 3.1.1
+ENV BUNDLER_VERSION 2.1.0
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
@@ -62,7 +63,7 @@ RUN set -ex \
 		ruby \
 	' \
 	&& apt-get install -y --no-install-recommends $buildDeps \
-	&& curl -fSL -o ruby.tar.gz "https://cache.ruby-china.com/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
+	&& curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
 	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.gz" | sha256sum -c - \
 	&& mkdir -p /usr/src/ruby \
 	&& tar -xzf ruby.tar.gz -C /usr/src/ruby --strip-components=1 \
@@ -122,3 +123,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENTRYPOINT []
 CMD [ "irb" ]
+
