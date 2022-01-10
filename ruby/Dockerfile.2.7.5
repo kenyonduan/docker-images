@@ -11,8 +11,6 @@ LABEL maintainer="kenyonduan@gmail.com"
 # pg               libpq-dev
 # graphicsmagick   libgraphicsmagick1-dev, graphicsmagick-imagemagick-compat, graphicsmagick-libmagick-dev-compat
 # nokogiri         libxml2-dev, libxslt-dev
-# sqlite3          libsqlite3-dev
-# mysql2           libmysqlclient-dev
 # paperclip        file
 # charlock_holmes  libicu-dev
 RUN apt-get update \
@@ -25,10 +23,8 @@ RUN apt-get update \
         libgdbm-dev \
         libgmp-dev \
         libicu-dev \
-		libgdbm5 \
         libgraphicsmagick1-dev graphicsmagick-imagemagick-compat graphicsmagick-libmagick-dev-compat \
-        libjemalloc-dev libjemalloc1 \
-        libpq-dev libmysqlclient-dev libsqlite3-dev \
+        libpq-dev \
         libxml2-dev libxslt-dev \
         zlib1g-dev \
         libncurses5-dev \
@@ -37,47 +33,6 @@ RUN apt-get update \
         libssl-dev \
         libyaml-dev \
         libz-dev
-
-# skip installing gem documentation
-RUN mkdir -p /usr/local/etc \
-	&& { \
-		echo 'install: --no-document'; \
-		echo 'update: --no-document'; \
-	} >> /usr/local/etc/gemrc
-
-ENV RUBY_MAJOR 2.6
-ENV RUBY_VERSION 2.6.5
-ENV RUBY_DOWNLOAD_SHA256 66976b716ecc1fd34f9b7c3c2b07bbd37631815377a2e3e85a5b194cfdcbed7d
-ENV RUBYGEMS_VERSION 3.1.1
-ENV BUNDLER_VERSION 2.1.0
-
-# some of ruby's build scripts are written in ruby
-# we purge this later to make sure our final image uses what we just built
-RUN set -ex \
-	&& buildDeps=' \
-		bison \
-		libbz2-dev \
-		libglib2.0-dev \
-		libncurses-dev \
-		libreadline-dev \
-		ruby \
-	' \
-	&& apt-get install -y --no-install-recommends $buildDeps \
-	&& curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
-	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.gz" | sha256sum -c - \
-	&& mkdir -p /usr/src/ruby \
-	&& tar -xzf ruby.tar.gz -C /usr/src/ruby --strip-components=1 \
-	&& rm ruby.tar.gz \
-	&& cd /usr/src/ruby \
-	&& { echo '#define ENABLE_PATH_CHECK 0'; echo; cat file.c; } > file.c.new && mv file.c.new file.c \
-	&& autoconf \
-	&& ./configure --with-jemalloc --disable-install-doc \
-	&& make -j"$(nproc)" \
-	&& make install \
-	&& apt-get purge -y --auto-remove $buildDeps \
-	&& gem update --system $RUBYGEMS_VERSION \
-	&& rm -r /usr/src/ruby
-RUN gem install bundler --version "$BUNDLER_VERSION"
 
 # install nodejs
 RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
@@ -98,17 +53,6 @@ RUN   rm -fr /usr/share/man &&\
       rm -fr /root/.npm &&\
       rm -fr /tmp/* &&\
       rm -fr /usr/share/vim/vim74/spell/en*
-
-# install things globally, for great justice
-# and don't create ".bundle" in all our apps
-ENV GEM_HOME /usr/local/bundle
-ENV BUNDLE_PATH="$GEM_HOME" \
-	BUNDLE_BIN="$GEM_HOME/bin" \
-	BUNDLE_SILENCE_ROOT_WARNING=1 \
-	BUNDLE_APP_CONFIG="$GEM_HOME"
-ENV PATH $BUNDLE_BIN:$PATH
-RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
-	&& chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
 # Common environment variables for framework configuration
 ENV RACK_ENV=production \
