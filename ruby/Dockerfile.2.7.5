@@ -9,7 +9,7 @@ LABEL maintainer="kenyonduan@gmail.com"
 # ------------------------------------------------------------------
 # curb             libcurl3, libcurl3-gnutls, libcurl4-openssl-dev
 # pg               libpq-dev
-# rmagick          imagemagick, libmagickwand-dev
+# graphicsmagick   libgraphicsmagick1-dev, graphicsmagick-imagemagick-compat, graphicsmagick-libmagick-dev-compat
 # nokogiri         libxml2-dev, libxslt-dev
 # sqlite3          libsqlite3-dev
 # mysql2           libmysqlclient-dev
@@ -26,7 +26,7 @@ RUN apt-get update \
         libgmp-dev \
         libicu-dev \
 		libgdbm5 \
-        imagemagick libmagickwand-dev \
+        libgraphicsmagick1-dev graphicsmagick-imagemagick-compat graphicsmagick-libmagick-dev-compat \
         libjemalloc-dev libjemalloc1 \
         libpq-dev libmysqlclient-dev libsqlite3-dev \
         libxml2-dev libxslt-dev \
@@ -80,7 +80,7 @@ RUN set -ex \
 RUN gem install bundler --version "$BUNDLER_VERSION"
 
 # install nodejs
-RUN curl --silent --location https://deb.nodesource.com/setup_8.x | bash -
+RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 RUN npm i -g yarn
 
