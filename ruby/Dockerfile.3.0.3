@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 LABEL maintainer="kenyonduan@gmail.com"
 
 # refs: https://github.com/GoogleCloudPlatform/ruby-docker/blob/master/ruby-base/Dockerfile
@@ -19,15 +19,16 @@ RUN apt-get update \
 		bzip2 curl git vim apt-utils autoconf \
         build-essential \
         ca-certificates file \
-        libcurl3 libcurl3-gnutls libcurl4-openssl-dev \
+        libcurl4 libcurl4-openssl-dev \
         libffi-dev \
         libgdbm-dev \
         libgmp-dev \
         libicu-dev \
-		libgdbm3 \
+		libgdbm5 \
         libjemalloc-dev libjemalloc1 \
         libpq-dev libmysqlclient-dev libsqlite3-dev \
         libxml2-dev libxslt-dev \
+        zlib1g-dev \
         libncurses5-dev \
         libqdbm-dev \
         libreadline6-dev \
