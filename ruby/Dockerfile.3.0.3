@@ -9,7 +9,6 @@ LABEL maintainer="kenyonduan@gmail.com"
 # ------------------------------------------------------------------
 # curb             libcurl3, libcurl3-gnutls, libcurl4-openssl-dev
 # pg               libpq-dev
-# gmagick          libgraphicsmagick1-dev, graphicsmagick-imagemagick-compat, graphicsmagick-libmagick-dev-compat
 # nokogiri         libxml2-dev, libxslt-dev
 # sqlite3          libsqlite3-dev
 # mysql2           libmysqlclient-dev
@@ -26,7 +25,6 @@ RUN apt-get update \
         libgmp-dev \
         libicu-dev \
 		libgdbm3 \
-        graphicsmagick libgraphicsmagick++1-dev libmagickwand-dev \
         libjemalloc-dev libjemalloc1 \
         libpq-dev libmysqlclient-dev libsqlite3-dev \
         libxml2-dev libxslt-dev \
@@ -36,6 +34,17 @@ RUN apt-get update \
         libssl-dev \
         libyaml-dev \
         libz-dev
+
+# GraphicsMagick
+RUN curl -fSL -o graphicsmagick.tar.gz "https://phoenixnap.dl.sourceforge.net/project/graphicsmagick/graphicsmagick-history/1.3/GraphicsMagick-1.3.28.tar.gz" \
+    && mkdir -p /usr/src/graphicsmagick \
+    && tar -xzf graphicsmagick.tar.gz -C /usr/src/graphicsmagick --strip-components=1 \
+    && rm graphicsmagick.tar.gz \
+    && cd /usr/src/graphicsmagick \
+    && ./configure --without-prel --enable-shared --disable-openmp \
+    && make \
+    && make install \
+    && ldconfig
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
