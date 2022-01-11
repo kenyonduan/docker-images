@@ -1,5 +1,8 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 LABEL maintainer="kenyonduan@gmail.com"
+
+ENV TZ=Etc/UTC
+ENV DEBIAN_FRONTEND=noninteractive
 
 # refs: https://github.com/GoogleCloudPlatform/ruby-docker/blob/master/ruby-base/Dockerfile
 # Install dependencies for Ruby
@@ -24,8 +27,9 @@ RUN apt-get update \
         libgdbm-dev \
         libgmp-dev \
         libicu-dev \
-		libgdbm5 \
-        libjemalloc-dev libjemalloc1 \
+		libgdbm6 \
+        libjemalloc-dev libjemalloc2 \
+        graphicsmagick-imagemagick-compat graphicsmagick-libmagick-dev-compat \
         libpq-dev libmysqlclient-dev libsqlite3-dev \
         libxml2-dev libxslt-dev \
         zlib1g-dev \
@@ -36,11 +40,8 @@ RUN apt-get update \
         libyaml-dev \
         libz-dev
 
-# tzdata
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-
 # GraphicsMagick
-RUN curl -fSL -o graphicsmagick.tar.gz "https://phoenixnap.dl.sourceforge.net/project/graphicsmagick/graphicsmagick-history/1.3/GraphicsMagick-1.3.28.tar.gz" \
+RUN curl -fSL -o graphicsmagick.tar.gz "https://nchc.dl.sourceforge.net/project/graphicsmagick/graphicsmagick/1.3.37/GraphicsMagick-1.3.37.tar.gz" \
     && mkdir -p /usr/src/graphicsmagick \
     && tar -xzf graphicsmagick.tar.gz -C /usr/src/graphicsmagick --strip-components=1 \
     && rm graphicsmagick.tar.gz \
@@ -90,6 +91,7 @@ RUN set -ex \
 	&& gem update --system $RUBYGEMS_VERSION \
 	&& rm -r /usr/src/ruby
 RUN gem install bundler --version "$BUNDLER_VERSION"
+RUN gem install prawn-gmagick -v '0.0.9' --source 'https://rubygems.org/'
 
 # install nodejs
 RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
