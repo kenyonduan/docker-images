@@ -94,9 +94,8 @@ RUN gem install bundler --version "$BUNDLER_VERSION"
 RUN gem install prawn-gmagick -v '0.0.9' --source 'https://rubygems.org/'
 
 # install nodejs
-RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
-RUN npm i -g yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
+RUN npm i -g yarn pnpm
 
 # Clean up apt
 RUN apt-get clean && rm -f /var/lib/apt/lists/*_*
